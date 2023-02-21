@@ -1,101 +1,93 @@
 #include "sort.h"
+#include <stdio.h>
 
 /**
- * quick_sort - Function that sorts an array based on
- * quick sort algorithm
- * @array: Array to be sorted
- * @size: Size of array
- * Return: 0
- */
-void quick_sort(int *array, size_t size)
-{
-	size_t pivot;
-
-	if (!array || size < 2)
-		return;
-
-	print_sort(array, size, 1);
-
-	/* partition and get pivot index */
-	pivot = partition(array, size);
-
-	/* repeat for left of index */
-	quick_sort(array, pivot);
-	/* repeat for index and right */
-	quick_sort(array + pivot, size - pivot);
-}
-
-/**
- * swap - Function that swaps two values
+ * _swap - swaps two values in an array
  *
- * @a: Fisrt value
- * @b: Second value
- * Return: 0
+ * @array: data to sort
+ * @i: first value
+ * @j: second value
+ * @size: size of data
+ *
+ * Return: No Return
  */
-void swap(int *a, int *b)
+void _swap(int *array, int i, int j, int size)
 {
 	int tmp;
 
-	tmp = *b;
-	*b = *a;
-	*a = tmp;
+	if (array[i] != array[j])
+	{
+		tmp = array[i];
+		array[i] = array[j];
+		array[j] = tmp;
+		print_array(array, size);
+	}
 }
 
 /**
- * partition - Function that sets the pivot for quick_sort
+ * partition - sorts a partition of data in relation to a pivot
  *
- * @array: Array to partition
- * @size: Size of array
- * Return: (i + 1)
+ * @array: data to sort
+ * @min: Left wall
+ * @max: right wall
+ * @size: size of data
+ *
+ * Return: New Pivot
  */
-size_t partition(int array[], size_t size)
+int partition(int *array, int min, int max, size_t size)
 {
-	int pivot;
-	size_t i = -1;
-	size_t j;
+	int i = min, j, pivot  = array[max];
 
-	if (!array || size < 2)
-		return (0);
-
-	pivot = array[size - 1];
-
-	for (j = 0; j < size - 1; j++)
+	for (j = min; j <= max; j++)
 	{
-		if (array[j] <= pivot)
+		if (array[j] < pivot)
 		{
+			_swap(array, i, j, size);
 			i++;
-			if (i != j)
-			{
-				swap(&array[i], &array[j]);
-				print_sort(array, size, 0);
-			}
 		}
+
 	}
-	if (i + 1 != size - 1)
-	{
-		swap(&array[i + 1], &array[size - 1]);
-		print_sort(array, size, 0);
-	}
-	return (i + 1);
+	_swap(array, i, max, size);
+
+	return (i);
 }
 
 /**
- * print_sort - Function that prints as it should
- * @array: Array to be printed
- * @size: Size of array
- * @init: Should initialize array
- * Return: 0
+ * quicksort -  sorts an array of integers in ascending order using the
+ * Quick sort algorithm Lomuto partition scheme
+ *
+ * @array: data to sort
+ * @min: Left wall
+ * @max: right wall
+ * @size: size of data
+ *
+ * Return: No Return
  */
-void print_sort(int array[], size_t size, int init)
+void quicksort(int *array, int min, int max, size_t size)
 {
-	static int *p = (void *)0;
-	static size_t s;
+	int p;
 
-	if (!p && init)
+	if (min < max)
 	{
-		p = array;
-		s = size;
+		p = partition(array, min, max, size);
+		quicksort(array, min, p - 1, size);
+		quicksort(array, p + 1, max, size);
 	}
-	if (!init)
-		print_array(p, s);
+}
+
+/**
+ * quick_sort -  sorts an array of integers in ascending order using the
+ * Quick sort algorithm Lomuto partition scheme
+ *
+ * @array: data to sort
+ * @size: size of data
+ *
+ * Return: No Return
+ */
+void quick_sort(int *array, size_t size)
+{
+	if (size < 2)
+		return;
+
+	quicksort(array, 0, size - 1, size);
 }
